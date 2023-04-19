@@ -17,9 +17,10 @@ import Chart from '../modules/chart'
 import Print from '../modules/print'
 import Community from '../modules/community'
 import Tab from '../modules/tab'
+import myDashboard from "@/router/modules/NewsDashboard";
 
 /** 登录后需要动态加入的本地路由 */
-const FrontRoutes: Route[] = [
+/*const FrontRoutes: Route[] = [
   ...Dashboard,
   ...Document,
   ...Component,
@@ -31,6 +32,13 @@ const FrontRoutes: Route[] = [
   ...Print,
   ...Community,
   ...Tab,
+]*/
+
+/** 登录后需要动态加入的本地路由 */
+const FrontRoutes: Route[] = [
+    ...myDashboard,
+    ...Pages
+
 ]
 
 export default FrontRoutes

@@ -115,7 +115,6 @@ export default defineComponent({
   }
   .box {
     height: calc(100% - 50px);
-    
     margin-bottom: 15px;
     :deep(.is-horizontal) {
       display: none;

@@ -9,10 +9,10 @@
           </template>
         </el-popconfirm>
       </div>
-      <div class="layout-container-form-search">
-        <el-input v-model="query.input" :placeholder="$t('message.common.searchTip')" @change="getTableData(true)"></el-input>
-        <el-button type="primary" :icon="Search" class="search-btn" @click="getTableData(true)">{{ $t('message.common.search') }}</el-button>
-      </div>
+<!--      <div class="layout-container-form-search">-->
+<!--        <el-input v-model="query.input" :placeholder="$t('message.common.searchTip')" @change="getTableData(true)"></el-input>-->
+<!--        <el-button type="primary" :icon="Search" class="search-btn" @click="getTableData(true)">{{ $t('message.common.search') }}</el-button>-->
+<!--      </div>-->
     </div>
     <div class="layout-container-table">
       <Table

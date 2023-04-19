@@ -6,7 +6,7 @@ export default {
   menu: {
     dashboard: {
       name: 'dashboard',
-      index: '首页'
+      index: '列表'
     },
     system: {
       name: '系统目录',
