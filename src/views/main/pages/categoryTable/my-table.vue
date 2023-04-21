@@ -25,10 +25,12 @@
         @getTableData="getTableData"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column prop="name" label="名称" align="center" />
-        <el-table-column prop="number" label="数字" align="center" />
-        <el-table-column prop="chooseName" label="选择器" align="center" />
-        <el-table-column prop="radioName" label="单选框" align="center" />
+        <el-table-column prop="id" label="id" align="center" />
+        <el-table-column prop="newsId" label="newsId" align="center" />
+        <el-table-column prop="textLink" label="链接" align="center" />
+        <el-table-column prop="linkState" label="状态" align="center" />
+        <el-table-column prop="createTime" label="创建时间" align="center" />
+        <el-table-column prop="updateTime" label="更新时间" align="center" />
         <el-table-column :label="$t('message.common.handle')" align="center" fixed="right" width="200">
           <template #default="scope">
             <el-button @click="handleEdit(scope.row)">{{ $t('message.common.update') }}</el-button>

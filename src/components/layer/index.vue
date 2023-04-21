@@ -9,8 +9,8 @@
       <slot></slot>
       <template #footer v-if="layer.showButton">
         <div>
-          <el-button type="primary" @click="confirm">确认</el-button>
-          <el-button @click="close">取消</el-button>
+          <el-button type="primary" @click="confirm">{{ confirmText }}</el-button>
+          <el-button @click="close">{{ closeText }}</el-button>
         </div>
       </template>
     </el-dialog>
@@ -18,18 +18,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import drag from '@/directive/drag/index'
+import { defineComponent, ref } from "vue";
+import drag from "@/directive/drag/index";
+
 export interface LayerInterface {
   show: boolean;
   title: string;
   showButton?: boolean;
   width?: string;
+
   [propName: string]: any;
+
+  confirmText?: string;
+  closeText?: string;
 }
+
 export interface LayerType {
-  close: Function
+  close: Function;
 }
+
+
 export default defineComponent({
   props: {
     layer: {
@@ -37,9 +45,10 @@ export default defineComponent({
       default: () => {
         return {
           show: false,
-          title: '',
+          title: "",
           showButton: false
-        }
+
+        };
       },
       required: true
     }
@@ -48,20 +57,32 @@ export default defineComponent({
     drag
   },
   setup(props, ctx) {
+    console.log(props.layer.closeText);
+    if (props.layer.closeText == undefined || props.layer.closeText == "") {
+      props.layer.closeText = "取消";
+    }
+    if (props.layer.confirmText == undefined || props.layer.confirmText == "") {
+      props.layer.confirmText = "确认";
+    }
+
     function confirm() {
-      ctx.emit('confirm')
+      ctx.emit("confirm");
     }
+
     function close() {
-      props.layer.show = false
+      props.layer.show = false;
     }
+
     return {
       confirm,
-      close
-    }
+      close,
+      confirmText: props.layer.confirmText,
+      closeText: props.layer.closeText
+    };
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>
-  
+
 </style>

@@ -20,7 +20,7 @@ export default [
       })
       if (user) {
         return {
-          code: 200,
+          code: 0,
           data: {
             token: user.token,
           },
@@ -45,7 +45,7 @@ export default [
       }).info
       if (info) {
         return {
-          code: 200,
+          code: 0,
           data: {
             info: info
           },
@@ -65,7 +65,7 @@ export default [
     method: 'post',
     response: () => {
       return {
-        code: 200,
+        code: 0,
         data: {},
         msg: 'success'
       };
@@ -76,7 +76,7 @@ export default [
     method: 'post',
     response: () => {
       return {
-        code: 200,
+        code: 0,
         data: {},
         msg: 'success'
       };

@@ -14,7 +14,7 @@ const route: Route[] = [
           () => import("@/views/main/dashboard/NewsDashboard.vue")
         ),
         meta: {
-          title: "message.menu.dashboard.index",
+          title: "message.menu.newsList.index",
           icon: "sfont system-home",
           hideClose: true,
         },

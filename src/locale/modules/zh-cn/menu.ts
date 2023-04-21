@@ -8,6 +8,10 @@ export default {
       name: 'dashboard',
       index: '列表'
     },
+    newsList: {
+      name:'newsList',
+      index:"文章列表"
+    },
     system: {
       name: '系统目录',
       redirect: '重定向页面',
