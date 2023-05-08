@@ -21,7 +21,7 @@ import news from "@/router/modules/NewsDashboard";
 
 /** 登录后需要动态加入的本地路由 */
 const FrontRoutes: Route[] = [
-  ...news
+  ...news,
   // ...Dashboard,
   // ...Document,
   // ...Component,

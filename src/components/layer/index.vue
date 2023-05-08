@@ -31,6 +31,13 @@ export interface LayerInterface {
 
   confirmText?: string;
   closeText?: string;
+  /**
+   * 1:create
+   * 2:update
+   */
+  type?: Number;
+
+
 }
 
 export interface LayerType {
@@ -46,8 +53,8 @@ export default defineComponent({
         return {
           show: false,
           title: "",
-          showButton: false
-
+          showButton: false,
+          type: 1
         };
       },
       required: true

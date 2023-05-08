@@ -1,8 +1,8 @@
 import axios from "axios";
 
 
-// let baseUrl = "https://api.dianxiao.feedadx.com/dianxiao"
-let baseUrl = "http://10.106.0.172:8080";
+let baseUrl = "http://api.admin.feedadx.com/admin"
+// let baseUrl = "http://10.106.0.172:8080";
 
 
 export function getData(params: object, data: object) {
@@ -17,4 +17,15 @@ export function createByOriginUrl(param: string) {
   return axios.get(baseUrl + "/newsAdmin/createByOriginUrl?" + param);
 }
 
+export function createByHtml(data: Object) {
+  return axios.post(baseUrl + "/parseHtml", data);
+}
+
+export function getNewsInfo(param: string) {
+  return axios.get(baseUrl + "/getNewsInfo?" + param);
+}
+
+export function updateNewsInfo(data: object) {
+  return axios.post(baseUrl + "/updateNewsInfo", data);
+}
 

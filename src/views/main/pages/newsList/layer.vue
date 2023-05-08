@@ -340,6 +340,7 @@ export default defineComponent({
             });
           }
           this.layerDom && this.layerDom.close();
+          this.$emit("getTableData", false, "", "");
           console.log("createRes", res);
         });
       });

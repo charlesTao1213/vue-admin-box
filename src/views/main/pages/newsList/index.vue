@@ -7,7 +7,7 @@
         </el-text
         >
         <el-date-picker
-          v-model="value1"
+          v-model="searchDate"
           type="daterange"
           range-separator="-"
           start-placeholder="开始时间"
@@ -15,47 +15,37 @@
           format="YYYY/MM/DD"
           value-format="YYYY-MM-DD HH:mm:ss"
           size="default"
-          @change="dateSelectHandler"
+          @change="getTableData(false)"
         />
       </div>
-
-      <div style="display: flex;align-items: center;margin-right: 15px">
-        <el-text class="mx-1" type="primary" style="width: 100px"
-        >默认链接前缀
+      <div style="display: flex;align-items: center;">
+        <el-text class="mx-1" type="primary" style="width: 100px;"
+        > 文章标题查询
         </el-text>
-        <el-input v-model="defaultLinkPrefix" :placeholder="defaultLinkPrefix" style="width: 500px">
+        <el-input @change="handleSearch" v-model="searchTitle" style="width: 300px">
         </el-input>
       </div>
-      <!--      <div class="layout-container-form-search" style="margin-left: 20px">-->
-      <!--        <el-input-->
-      <!--          v-model="query.input"-->
-      <!--          :placeholder="$t('message.common.searchTip')"-->
-      <!--          @change="getTableData(true)"-->
-      <!--        ></el-input>-->
-      <!--        <el-button-->
-      <!--          type="primary"-->
-      <!--          :icon="Search"-->
-      <!--          class="search-btn"-->
-      <!--          @click="getTableData(true)"-->
-      <!--        >{{ $t("message.common.search") }}-->
-      <!--        </el-button-->
-      <!--        >-->
-      <!--      </div>-->
+      <div style="margin-left: 30px">
+        <el-button type="primary" :icon="Search" @click="handleSearch">{{ $t("message.common.search") }}</el-button>
+      </div>
     </div>
     <div class="content">
       <div class="layout-container">
         <div class="layout-container-form flex space-between">
           <div class="layout-container-form-handle">
             <el-button type="primary" :icon="Plus" @click="handleAdd">{{ $t("message.common.formAdd") }}</el-button>
-            <!--            <el-popconfirm :title="$t('message.common.delTip')" @confirm="handleDel(chooseData)">-->
-            <!--              <template #reference>-->
-            <!--                <el-button type="danger" :icon="Delete" :disabled="chooseData.length === 0">-->
-            <!--                  {{ $t("message.common.delBat") }}-->
-            <!--                </el-button>-->
-            <!--              </template>-->
-            <!--            </el-popconfirm>-->
+
             <el-button type="danger" :icon="Plus" @click="handleUrlAdd">{{ $t("message.common.originUrlAdd") }}
             </el-button>
+            <el-button type="warning" :icon="Plus" @click="handlerHtmlAdd">{{ $t("message.common.htmlAdd") }}
+            </el-button>
+            <div style="display: flex;align-items: center;">
+              <el-text class="mx-1" type="primary" style="width: 100px;margin-left: 50px"
+              >默认链接前缀
+              </el-text>
+              <el-input v-model="defaultLinkPrefix" :placeholder="defaultLinkPrefix" style="width: 500px">
+              </el-input>
+            </div>
           </div>
         </div>
         <div class="layout-container-table">
@@ -64,13 +54,25 @@
             v-model:page="page"
             v-loading="loading"
             :data="tableData"
+            :sort-change="handleSort"
             @getTableData="getTableData"
             @selection-change="handleSelectionChange"
           >
-            <el-table-column prop="id" label="id" align="center" />
+            <el-table-column :label="$t('message.common.handle')" align="center" fixed="left" width="100">
+              <template #default="scope">
+                <el-button @click="handleEdit(scope.row)">{{ $t("message.common.update") }}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column prop="id" align="center" width="100">
+              <template #header>
+                <el-text>id</el-text>
+                <el-button style="margin-left: 5px" :icon="Sort" text @click="handleSort('id')" />
+              </template>
+            </el-table-column>
+
             <el-table-column prop="newsId" label="newsId" align="center" />
-            <el-table-column prop="newsTitle" label="标题" align="center" />
-            <el-table-column prop="textLink" label="链接" align="center">
+            <el-table-column prop="title" label="标题" align="center" />
+            <el-table-column prop="textLink" label="链接" align="center" width="150">
               <template #default="scope">
                 <el-text>{{ scope.row.textLink }}</el-text>
                 <el-button type="primary" @click="handleCopy(scope.row.textLink)" style="margin-left: 10px">
@@ -78,28 +80,28 @@
                 </el-button>
               </template>
             </el-table-column>
-            <el-table-column prop="linkState" label="状态" align="center">
+            <el-table-column prop="linkState" label="状态" align="center" width="80">
               <template #default="scope">
                 <el-text>{{ scope.row.linkState == 0 ? "正常" : "停用" }}</el-text>
               </template>
             </el-table-column>
-            <el-table-column prop="createTime" label="创建时间" align="center" />
+            <el-table-column prop="createTime" align="center">
+              <template #header>
+                <el-text>创建时间</el-text>
+                <el-button style="margin-left: 5px" :icon="Sort" text @click="handleSort('createTime')" />
+              </template>
+            </el-table-column>
+
             <el-table-column prop="updateTime" label="更新时间" align="center" />
-            <!--            <el-table-column :label="$t('message.common.handle')" align="center" fixed="right" width="200">-->
-            <!--              <template #default="scope">-->
-            <!--                <el-button @click="handleEdit(scope.row)">{{ $t("message.common.update") }}</el-button>-->
-            <!--                <el-popconfirm :title="$t('message.common.delTip')" @confirm="handleDel([scope.row])">-->
-            <!--                  <template #reference>-->
-            <!--                    <el-button type="danger">{{ $t("message.common.del") }}</el-button>-->
-            <!--                  </template>-->
-            <!--                </el-popconfirm>-->
-            <!--              </template>-->
-            <!--            </el-table-column>-->
           </Table>
           <Layer id="nomalAdd" :layer="layer" @getTableData="getTableData" v-if="layer.show" />
 
           <OriginUrlAddLayer id="urlAddLayer" :layer="urlAddLayer" @getTableData="getTableData"
                              v-if="urlAddLayer.show" />
+          <NewsWordEditor id="newsWordEditor" :layer="newsWordEditorLayer" :news-id="currentNewsId"
+                          v-if="newsWordEditorLayer.show"
+                          @getTableData="getTableData"></NewsWordEditor>
+
 
         </div>
       </div>
@@ -113,7 +115,7 @@ import { defineComponent, ref, provide, reactive, inject, watch, defineExpose } 
 import newsTable from "@/views/main/pages/categoryTable/news-table.vue";
 import { getData } from "@/api/news/news";
 import { Page } from "@/components/table/type";
-import { Delete, Plus, Search } from "@element-plus/icons";
+import { Delete, Plus, Search, Sort } from "@element-plus/icons";
 import Table from "@/components/table/index.vue";
 import Layer from "./layer.vue";
 import { ElMessage } from "element-plus";
@@ -123,24 +125,29 @@ import { radioData, selectData } from "@/views/main/pages/categoryTable/enum";
 import { del } from "@/api/table";
 import write from "@/utils/system/Clipboard";
 import OriginUrlAddLayer from "@/views/main/pages/newsList/OriginUrlAddLayer.vue";
+import { ElLoading } from "element-plus";
+import NewsWordEditor from "@/views/main/pages/newsList/NewsWordEditor.vue";
 
 export default defineComponent({
   name: "categoryTable",
   components: {
+    Sort,
     OriginUrlAddLayer,
     newsTable,
     Table,
-    Layer
+    Layer,
+    NewsWordEditor
   },
   setup() {
+    const searchTitle = ref("");
     const defaultLinkPrefix = ref("https://api.dianxiao.feedadx.com/dianxiao/jumpByLink/");
     let active: any = ref({});
+    const currentNewsId = ref(0);
     provide("active", active);
-    const value1 = ref("");
-    const query = reactive({
-      input: ""
-    });
-    // 弹窗控制器
+
+    const searchDate = ref("");
+    let idReverse = false;//false升序 true降序
+    let createTimeReverse = false;
     const layer: LayerInterface = reactive({
       show: false,
       title: "新增文章",
@@ -153,8 +160,15 @@ export default defineComponent({
       showButton: true,
       confirmText: "生成"
     });
+    const newsWordEditorLayer: LayerInterface = reactive({
+      show: false,
+      title: "新增文章",
+      showButton: true,
+      confirmText: "生成",
+      width: "80%"
+    });
 
-    const activeCategory: any = inject("active");
+    // const activeCategory: any = inject("active");
     const loading = ref(true);
     const tableData = ref([]);
     const chooseData = ref([]);
@@ -166,11 +180,13 @@ export default defineComponent({
       size: 20,
       total: 0
     });
-    const dateSelectHandler = ([from, to]: Array<string>) => {
-      getTableData(false, from, to);
-    };
 
-    const getTableData = (init: boolean, fromTime: string, endTime: string) => {
+
+    const getTableData = (init: boolean) => {
+      let fromTime = searchDate.value[0];
+      let endTime = searchDate.value[1];
+
+      console.error("getTableData", init, fromTime, endTime);
       loading.value = true;
       let tempEndTime = endTime;
       if (tempEndTime != "") {
@@ -181,12 +197,21 @@ export default defineComponent({
       if (init) {
         page.index = 1;
       }
-      getData({}, {
+      let data = {
         fromTime,
         endTime: tempEndTime,
         page: page.index,
-        size: page.size
-      })
+        size: page.size,
+        title: "",
+        idReverse,
+        createTimeReverse
+      };
+      if (searchTitle.value != null && searchTitle.value != "") {
+        data.title = searchTitle.value;
+      }
+
+
+      getData({}, data)
         .then((res: any) => {
           res = res.data;
           let data = res.newsLinkMappers;
@@ -232,9 +257,11 @@ export default defineComponent({
       delete layer.row;
     };
     const handleEdit = (row: object) => {
-      layer.title = "编辑数据";
-      layer.row = row;
-      layer.show = true;
+      currentNewsId.value = row.newsId;
+      newsWordEditorLayer.type = 2;
+      newsWordEditorLayer.title = "编辑数据";
+      newsWordEditorLayer.row = row;
+      newsWordEditorLayer.show = true;
     };
 
     const handleDel = (data: object[]) => {
@@ -249,7 +276,7 @@ export default defineComponent({
             type: "success",
             message: "删除成功"
           });
-          getTableData(tableData.value.length === 1 ? true : false, "", "");
+          getTableData(tableData.value.length === 1);
         });
     };
     const handleCopy = async (link: string) => {
@@ -275,14 +302,35 @@ export default defineComponent({
       delete urlAddLayer.row;
     };
 
-    getTableData(false, "", "");
+    getTableData(false);
+
+    const handleSearch = () => {
+      getTableData(false);
+
+    };
+    const handleSort = (column: string) => {
+      if (column == "id") {
+        idReverse = !idReverse;
+      } else if (column == "createTime") {
+        createTimeReverse = !createTimeReverse;
+      }
+      getTableData(false);
+      console.log("sort");
+    };
+
+    const handlerHtmlAdd = () => {
+      newsWordEditorLayer.title = "新增数据";
+      newsWordEditorLayer.show = true;
+      delete newsWordEditorLayer.row;
+      console.log("handlerHtmlAdd");
+    };
+
 
     return {
-      value1,
-      query,
-      dateSelectHandler,
+      searchDate,
       Search,
       Plus,
+      Sort,
       Delete,
       tableData,
       chooseData,
@@ -297,7 +345,13 @@ export default defineComponent({
       defaultLinkPrefix,
       handleCopy,
       handleUrlAdd,
-      urlAddLayer
+      urlAddLayer,
+      searchTitle,
+      handleSearch,
+      handleSort,
+      handlerHtmlAdd,
+      newsWordEditorLayer,
+      currentNewsId
     };
   }
 });
