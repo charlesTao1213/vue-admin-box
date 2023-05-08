@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 let baseUrl = "http://api.admin.feedadx.com/admin"
-// let baseUrl = "http://10.106.0.172:8080";
+// let baseUrl = "http://10.106.1.11:8080";
 
 
 export function getData(params: object, data: object) {

@@ -1,39 +1,73 @@
 <template>
   <Layer :layer="layer" @confirm="submit" ref="layerDom">
-    <el-form :model="form" :rules="rules" ref="ruleForm" label-width="120px" style="margin-right:30px;">
+    <el-form
+      :model="form"
+      :rules="rules"
+      ref="ruleForm"
+      label-width="120px"
+      style="margin-right: 30px"
+    >
       <el-form-item label="标题：" prop="title" style="margin-top: 10px">
         <el-input v-model="form.title" placeholder="请输入标题"></el-input>
       </el-form-item>
       <el-form-item label="作者：" prop="author" style="margin-top: 10px">
-        <el-input v-model="form.author"
-                  placeholder="作者"></el-input>
+        <el-input v-model="form.author" placeholder="作者"></el-input>
       </el-form-item>
 
-      <el-form-item label="原文链接：" prop="originUrl" style="margin-top: 10px">
-        <el-input v-model="form.originUrl"
-                  placeholder="原文链接"></el-input>
+      <el-form-item
+        label="原文链接："
+        prop="originUrl"
+        style="margin-top: 10px"
+      >
+        <el-input v-model="form.originUrl" placeholder="原文链接"></el-input>
+      </el-form-item>
+      <el-form-item
+        label="发布时间："
+        prop="publishTime"
+        style="margin-top: 10px"
+      >
+        <el-date-picker
+          v-model="form.publishTime"
+          type="datetime"
+          range-separator="-"
+          placeholder="发布时间"
+          format="YYYY/MM/DD"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          size="default"
+        />
       </el-form-item>
 
-      <div v-for="(contentItem,index) in content" class="content-item">
+      <div v-for="(contentItem, index) in content" class="content-item">
         <div style="width: 100%">
-          <el-form-item :label="'正文内容：'+(index+1)" prop="select">
-            <el-select v-model="contentItem.type" placeholder="请选择类型" clearable>
-              <el-option v-for="item in selectData" :key="item.value" :label="item.label"
-                         :value="item.value"></el-option>
+          <el-form-item :label="'正文内容：' + (index + 1)" prop="select">
+            <el-select
+              v-model="contentItem.type"
+              placeholder="请选择类型"
+              clearable
+            >
+              <el-option
+                v-for="item in selectData"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
             </el-select>
           </el-form-item>
           <div v-if="contentItem.type == 1" class="textSelect">
             <el-form-item label="文字内容">
-              <el-input v-model="contentItem.content" type="textarea" :rows="5" />
+              <el-input
+                v-model="contentItem.content"
+                type="textarea"
+                :rows="5"
+              />
             </el-form-item>
           </div>
           <div v-else-if="contentItem.type == 2" class="picSelect">
             <el-upload
-              :multiple=false
+              :multiple="false"
               ref="uploadRef"
-              :auto-upload=false
+              :auto-upload="false"
               v-model:file-list="fileList[index]"
-
               class="upload-demo"
               :on-change="handleChange"
               :on-preview="handlePreview"
@@ -43,18 +77,32 @@
               <template #trigger>
                 <el-button type="primary">选择文件</el-button>
               </template>
-              <el-button class="ml-3" style="margin-left: 10px" type="success" @click="submitUpload(index)">
+              <el-button
+                class="ml-3"
+                style="margin-left: 10px"
+                type="success"
+                @click="submitUpload(index)"
+              >
                 上传
               </el-button>
             </el-upload>
           </div>
         </div>
-        <el-button type="primary" :icon="Plus" @click="addContent(index)" circle style="margin-left: 20px" />
-        <el-button type="primary" :icon="Minus" @click="removeContent(index,contentItem.type)" circle
-                   style="margin-left: 20px" />
-
+        <el-button
+          type="primary"
+          :icon="Plus"
+          @click="addContent(index)"
+          circle
+          style="margin-left: 20px"
+        />
+        <el-button
+          type="primary"
+          :icon="Minus"
+          @click="removeContent(index, contentItem.type)"
+          circle
+          style="margin-left: 20px"
+        />
       </div>
-
 
       <!--      <el-form-item label="作者：" prop="select">-->
       <!--        <el-select v-model="form.choose" placeholder="请选择" clearable>-->
@@ -96,10 +144,9 @@ export interface UpLoadSignDTO {
   signature: string;
 }
 
-
 export default defineComponent({
   components: {
-    Layer
+    Layer,
   },
   props: {
     layer: {
@@ -108,14 +155,15 @@ export default defineComponent({
         return {
           show: false,
           title: "",
-          showButton: true
+          showButton: true,
         };
-      }
-    }
+      },
+    },
   },
   setup(props, ctx) {
     console.log(props.layer);
     const imgs: string[] = [];
+
     const dataUrl = ref("");
     const uploadRef = ref<UploadInstance>();
 
@@ -129,21 +177,22 @@ export default defineComponent({
       title: "",
       content: {},
       author: "",
-      originUrl: ""
+      originUrl: "",
+      publishTime: "",
     });
     const rules = {
       name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
       number: [{ required: true, message: "请输入数字", trigger: "blur" }],
       choose: [{ required: true, message: "请选择", trigger: "blur" }],
-      radio: [{ required: true, message: "请选择", trigger: "blur" }]
+      radio: [{ required: true, message: "请选择", trigger: "blur" }],
     };
     init();
 
-    function init() { // 用于判断新增还是编辑功能
+    function init() {
+      // 用于判断新增还是编辑功能
       if (props.layer.row) {
         form.value = JSON.parse(JSON.stringify(props.layer.row)); // 数量量少的直接使用这个转
       } else {
-
       }
     }
 
@@ -155,10 +204,11 @@ export default defineComponent({
       console.log(uploadFile);
     };
 
-
     const handleExceed: UploadProps["onExceed"] = (files, uploadFiles) => {
       ElMessage.warning(
-        `The limit is 3, you selected ${files.length} files this time, add up to ${
+        `The limit is 3, you selected ${
+          files.length
+        } files this time, add up to ${
           files.length + uploadFiles.length
         } totally`
       );
@@ -167,7 +217,10 @@ export default defineComponent({
       // fileList.value = fileList.value.slice(-3);
       console.error("handleChange", fileList.value);
     };
-    const beforeRemove: UploadProps["beforeRemove"] = (uploadFile, uploadFiles) => {
+    const beforeRemove: UploadProps["beforeRemove"] = (
+      uploadFile,
+      uploadFiles
+    ) => {
       return ElMessageBox.confirm(
         `Cancel the transfer of ${uploadFile.name} ?`
       ).then(
@@ -181,17 +234,22 @@ export default defineComponent({
       const file: UploadUserFile[] = files.at(index)!;
       let formData = new FormData();
       formData.append("file", file[0].raw!);
-      sendFile(formData, 2).then(res => {
+      sendFile(formData, 2).then((res) => {
         res = res.data;
         if (res.code == 0) {
-
           ElMessage({
             message: "成功",
             type: "success",
-            duration: 3 * 1000
+            duration: 3 * 1000,
           });
           imgs.push(res.url);
           content.value[index].picture = res.url;
+        } else {
+          ElMessage({
+            message: "失败",
+            type: "error",
+            duration: 3 * 1000,
+          });
         }
       });
       // getSign(1).then(res => {
@@ -202,8 +260,12 @@ export default defineComponent({
       // });
     };
 
-    const upload = (signDTO: UpLoadSignDTO, contentType: number, file: UploadRawFile, fileName: string) => {
-
+    const upload = (
+      signDTO: UpLoadSignDTO,
+      contentType: number,
+      file: UploadRawFile,
+      fileName: string
+    ) => {
       //   let config = {};
       //   let fd = new FormData();
       //   let fileSuf = "";
@@ -275,8 +337,7 @@ export default defineComponent({
       addContent,
       Minus,
       removeContent,
-      dataUrl
-
+      dataUrl,
     };
   },
   methods: {
@@ -296,15 +357,14 @@ export default defineComponent({
           }
         });
       }
-    }
-    ,
+    },
     uploadContent(resolve: any, reject: any) {
       let temp: string = JSON.stringify(this.content);
       const blob = new Blob([temp]);
       let formData = new FormData();
       formData.append("file", new File([blob], ""));
 
-      sendFile(formData, 1).then(res => {
+      sendFile(formData, 1).then((res) => {
         res = res.data;
         if (res.code == 0) {
           resolve();
@@ -314,29 +374,31 @@ export default defineComponent({
         }
       });
     },
-// 新增提交事件
+    // 新增提交事件
     addForm(params: object) {
       console.error("add");
       console.error("content", this.content);
       console.error("img", this.imgs);
+
       new Promise((resolve, reject) => {
         this.uploadContent(resolve, reject);
-      }).then(res => {
+      }).then((res) => {
         const data: NewsInfo = {
           title: this.form.title,
           content: JSON.stringify(this.content),
           imgs: this.imgs.join(";"),
           originUrl: this.form.originUrl,
           author: this.form.author,
-          dataUrl: this.dataUrl
+          dataUrl: this.dataUrl,
+          publishTime: this.form.publishTime,
         };
         console.error(data);
-        create(data).then(res => {
+        create(data).then((res) => {
           res = res.data;
           if (res.code == 0) {
             this.$message({
               type: "success",
-              message: "新增成功"
+              message: "新增成功",
             });
           }
           this.layerDom && this.layerDom.close();
@@ -353,27 +415,23 @@ export default defineComponent({
       //     this.$emit("getTableData", true);
       //     this.layerDom && this.layerDom.close();
       //   });
-    }
-    ,
-// 编辑提交事件
+    },
+    // 编辑提交事件
     updateForm(params: object) {
-      update(params)
-        .then(res => {
-          this.$message({
-            type: "success",
-            message: "编辑成功"
-          });
-          this.$emit("getTableData", false);
-          this.layerDom && this.layerDom.close();
+      update(params).then((res) => {
+        this.$message({
+          type: "success",
+          message: "编辑成功",
         });
-    }
-  }
-})
-;
+        this.$emit("getTableData", false);
+        this.layerDom && this.layerDom.close();
+      });
+    },
+  },
+});
 </script>
 
 <style lang="scss" scoped>
-
 .picSelect {
   display: flex;
   align-items: center;

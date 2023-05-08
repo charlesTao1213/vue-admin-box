@@ -1,12 +1,40 @@
 <template>
   <Layer :layer="layer" @confirm="submit" ref="layerDom">
-    <el-form :model="form" ref="ruleForm" label-width="120px" style="margin-right:30px;">
-      <el-form-item label="原文链接：" prop="originUrl" style="margin-top: 10px">
-        <el-input v-model="form.originUrl" placeholder="请输入原文链接"></el-input>
+    <el-form
+      :model="form"
+      ref="ruleForm"
+      label-width="120px"
+      style="margin-right: 30px"
+    >
+      <el-form-item
+        label="原文链接："
+        prop="originUrl"
+        style="margin-top: 10px"
+      >
+        <el-input
+          v-model="form.originUrl"
+          placeholder="请输入原文链接"
+        ></el-input>
+      </el-form-item>
+
+      <el-form-item label="发布时间" prop="publishTime">
+        <el-date-picker
+          v-model="form.publishTime"
+          type="datetime"
+          placeholder="发布时间"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          size="default"
+        />
       </el-form-item>
 
       <el-form-item label="来源类型" prop="source">
-        <el-select v-model="form.source" class="m-2" placeholder="文章来源" size="small">
+        <el-select
+          v-model="form.source"
+          class="m-2"
+          placeholder="文章来源"
+          size="small"
+        >
           <el-option
             v-for="item in sourceOption"
             :key="item.value"
@@ -28,7 +56,7 @@ import Layer from "@/components/layer/index.vue";
 import type { UploadProps, UploadUserFile, UploadInstance } from "element-plus";
 import { NewsInfo } from "@/views/main/pages/newsList/Types";
 import { createByOriginUrl } from "@/api/news/news";
-import { ElLoading } from "element-plus";
+import { ElLoading, ElMessage } from "element-plus";
 
 export interface UrlCreateNewsInfo extends NewsInfo {
   source: string;
@@ -36,7 +64,7 @@ export interface UrlCreateNewsInfo extends NewsInfo {
 
 export default defineComponent({
   components: {
-    Layer
+    Layer,
   },
   props: {
     layer: {
@@ -45,42 +73,48 @@ export default defineComponent({
         return {
           show: false,
           title: "",
-          showButton: true
+          showButton: true,
         };
-      }
-    }
+      },
+    },
   },
   setup(props, ctx) {
-    const sourceOption = ref([{
-      label: "微信公众号",
-      value: "weixin"
-    }, {
-      label: "其他",
-      value: "other",
-      disabled: true
-    }]);
+    const publishTime: Ref<String | undefined> = ref("");
+
+    const sourceOption = ref([
+      {
+        label: "微信公众号",
+        value: "weixin",
+      },
+      {
+        label: "其他",
+        value: "other",
+        disabled: true,
+      },
+    ]);
     console.log(props.layer);
     const layerDom: Ref<LayerType | null> = ref(null);
     let form = ref({
       originUrl: "",
-      source: ""
+      source: "",
+      publishTime: "",
     });
 
     init();
 
-    function init() { // 用于判断新增还是编辑功能
+    function init() {
+      // 用于判断新增还是编辑功能
       if (props.layer.row) {
         form.value = JSON.parse(JSON.stringify(props.layer.row)); // 数量量少的直接使用这个转
       } else {
-
       }
     }
 
     return {
       form,
       layerDom,
-      sourceOption
-
+      sourceOption,
+      publishTime,
     };
   },
   methods: {
@@ -88,7 +122,7 @@ export default defineComponent({
       const loading = ElLoading.service({
         lock: true,
         text: "Loading",
-        background: "rgba(0, 0, 0, 0.7)"
+        background: "rgba(0, 0, 0, 0.7)",
       });
 
       setTimeout(() => {
@@ -111,33 +145,49 @@ export default defineComponent({
       if (source == "" || source == undefined) {
         return;
       }
+
+      let publishTime = params.publishTime;
+      if (publishTime == "" || publishTime == undefined) {
+        return;
+      }
       let loading = this.openLoading();
-      let param = "source=" + source + "&" + "sourceUrl=" + originUrl;
-      createByOriginUrl(param).then(res => {
-        res = res.data;
-        if (res.code == 0) {
+      let param =
+        "source=" +
+        source +
+        "&" +
+        "sourceUrl=" +
+        originUrl +
+        "&publishTime=" +
+        publishTime;
+      createByOriginUrl(param)
+        .then((res) => {
+          res = res.data;
+          if (res.code == 0) {
+            this.$message({
+              type: "success",
+              message: "新增成功",
+            });
+          } else {
+            this.$message({
+              type: "error",
+              message: "创建失败",
+            });
+          }
+          this.layerDom && this.layerDom.close();
+          this.$emit("getTableData", false, "", "");
+        })
+        .catch(() => {
           this.$message({
-            type: "success",
-            message: "新增成功"
+            type: "error",
+            message: "新增失败",
           });
-        }
-        this.layerDom && this.layerDom.close();
-        this.$emit("getTableData", false, "", "");
-      }).catch(() => {
-        this.$message({
-          type: "error",
-          message: "新增失败"
+        })
+        .finally(() => {
+          loading.close();
         });
-      }).finally(() => {
-        loading.close();
-      });
-    }
-
-  }
+    },
+  },
 });
-
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

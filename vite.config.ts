@@ -4,36 +4,36 @@
  * @LastEditors: Please set LastEditors
  * @LastEditTime: 2023-02-21 22:57:42
  * @FilePath: \vue-admin-box\vite.config.ts
- * @Description: 
+ * @Description:
  */
-import { ConfigEnv, UserConfigExport } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import { viteMockServe } from 'vite-plugin-mock'
-import {vitePluginSvg} from "@webxrd/vite-plugin-svg"
-import { resolve } from 'path'
+import { ConfigEnv, UserConfigExport } from "vite";
+import vue from "@vitejs/plugin-vue";
+import { viteMockServe } from "vite-plugin-mock";
+import { vitePluginSvg } from "@webxrd/vite-plugin-svg";
+import { resolve } from "path";
 
 const pathResolve = (dir: string): any => {
-  return resolve(__dirname, ".", dir)
-}
+  return resolve(__dirname, ".", dir);
+};
 
 const alias: Record<string, string> = {
-  '@': pathResolve("src")
-}
+  "@": pathResolve("src"),
+};
 
-/** 
+/**
  * @description-en vite document address
  * @description-cn vite官网
  * https://vitejs.cn/config/ */
 export default ({ command }: ConfigEnv): UserConfigExport => {
   const prodMock = true;
   return {
-    base: './',
+    base: "./",
     resolve: {
-      alias
+      alias,
     },
     server: {
       port: 3001,
-      host: '10.106.0.82',
+      host: "10.106.1.11",
       // open: true,
       // proxy: { // 代理配置
       //   '/api': {
@@ -48,17 +48,17 @@ export default ({ command }: ConfigEnv): UserConfigExport => {
       rollupOptions: {
         output: {
           manualChunks: {
-            'echarts': ['echarts']
-          }
-        }
-      }
+            echarts: ["echarts"],
+          },
+        },
+      },
     },
     plugins: [
       vue(),
       viteMockServe({
-        mockPath: 'mock',
-        localEnabled: command === 'serve',
-        prodEnabled: command !== 'serve' && prodMock,
+        mockPath: "mock",
+        localEnabled: command === "serve",
+        prodEnabled: command !== "serve" && prodMock,
         watchFiles: true,
         injectCode: `
           import { setupProdMockServer } from '../mockProdServer';
@@ -68,29 +68,27 @@ export default ({ command }: ConfigEnv): UserConfigExport => {
       }),
       vitePluginSvg({
         // 必要的。必须是绝对路径组成的数组。
-        iconDirs: [
-            resolve(__dirname, 'src/assets/svg'),
-        ],
+        iconDirs: [resolve(__dirname, "src/assets/svg")],
         // 必要的。入口script
-        main: resolve(__dirname, 'src/main.js'),
-        symbolIdFormat: 'icon-[name]'
+        main: resolve(__dirname, "src/main.js"),
+        symbolIdFormat: "icon-[name]",
       }),
     ],
     css: {
       postcss: {
         plugins: [
-            {
-              postcssPlugin: 'internal:charset-removal',
-              AtRule: {
-                charset: (atRule) => {
-                  if (atRule.name === 'charset') {
-                    atRule.remove();
-                  }
+          {
+            postcssPlugin: "internal:charset-removal",
+            AtRule: {
+              charset: (atRule) => {
+                if (atRule.name === "charset") {
+                  atRule.remove();
                 }
-              }
-            }
+              },
+            },
+          },
         ],
       },
-    }
+    },
   };
-}
+};

@@ -5,7 +5,7 @@ import { UploadUserFile } from "element-plus";
 
 let baseUrl = "http://api.admin.feedadx.com/admin"
 //
-// let baseUrl = "http://10.106.0.172:8080"
+// let baseUrl = "http://10.106.1.11:8080"
 
 export function getSign(contentType: number) {
   return  axios.get(baseUrl+"/news/ossSign?contentType=" + contentType)

@@ -9,14 +9,34 @@
         </div>
         <div style="margin-top: 20px">
           <el-text>作者：</el-text>
-          <el-input v-model="author" placeholder="文章作者" style="width: 500px">
+          <el-input
+            v-model="author"
+            placeholder="文章作者"
+            style="width: 500px"
+          >
           </el-input>
         </div>
 
         <div style="margin-top: 20px">
           <el-text>原文链接：</el-text>
-          <el-input v-model="originUrl" placeholder="原文链接" style="width: 500px">
+          <el-input
+            v-model="originUrl"
+            placeholder="原文链接"
+            style="width: 500px"
+          >
           </el-input>
+        </div>
+
+        <div style="margin-top: 20px">
+          <el-text>发布时间：</el-text>
+          <el-date-picker
+            v-model="publishTime"
+            type="datetime"
+            placeholder="发布时间"
+            format="YYYY/MM/DD"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            size="default"
+          />
         </div>
         <div style="margin-top: 20px">
           <el-text>文章内容：</el-text>
@@ -47,13 +67,13 @@ export default defineComponent({
           show: false,
           title: "",
           showButton: true,
-          type: 1
+          type: 1,
         };
-      }
+      },
     },
     newsId: {
-      type: Number
-    }
+      type: Number,
+    },
   },
   setup(props, ctx) {
     console.error("lay", props.layer.row);
@@ -62,14 +82,17 @@ export default defineComponent({
     const title: Ref<String | undefined> = ref("");
     const author: Ref<String | undefined> = ref("");
     const originUrl: Ref<String | undefined> = ref("");
-    const textLink: string = props.layer.row.textLink;
+    const publishTime: Ref<String | undefined> = ref("");
+    let textLink: string = "";
+    if (props.layer.row != undefined) {
+      textLink = props.layer.row.textLink;
+    }
     const newsId = props.newsId;
-    console.log("newId", newsId);
     let newsInfo: NewsInfo;
     const init = () => {
       if (props.layer.type == 2) {
         let parma = "newsId=" + newsId;
-        getNewsInfo(parma).then(res => {
+        getNewsInfo(parma).then((res) => {
           res = res.data;
           if (res.code == 0) {
             newsInfo = res.newsInfo;
@@ -96,17 +119,23 @@ export default defineComponent({
           contentHtml: word.value,
           author: author.value,
           title: title.value,
-          url: originUrl.value
+          url: originUrl.value,
+          publishTime: publishTime.value,
         };
-        createByHtml(data).then(res => {
+        createByHtml(data).then((res) => {
           res = res.data;
           if (res.code == 0) {
             ElMessage({
               type: "success",
-              message: "创建成功"
+              message: "创建成功",
             });
             layerDom && layerDom.value?.close();
             ctx.emit("getTableData", false);
+          } else {
+            ElMessage({
+              type: "error",
+              message: "创建失败",
+            });
           }
           console.log("createByHtml res" + res);
         });
@@ -115,27 +144,26 @@ export default defineComponent({
     const update = () => {
       if (word.value != "" && word.value != null) {
         let data = {
-            content: word.value,
-            author: author.value,
-            title: title.value,
-            linkUrl: textLink,
-            originUrl: originUrl.value
-          }
-        ;
+          content: word.value,
+          author: author.value,
+          title: title.value,
+          linkUrl: textLink,
+          originUrl: originUrl.value,
+          publishTime: publishTime.value,
+        };
         console.log("update", data);
-        updateNewsInfo(data).then(res => {
+        updateNewsInfo(data).then((res) => {
           res = res.data;
           if (res.code == 0) {
             ElMessage({
               type: "success",
-              message: "修改成功"
+              message: "修改成功",
             });
             layerDom && layerDom.value?.close();
             ctx.emit("getTableData", false);
           }
         });
       }
-
     };
 
     return {
@@ -144,13 +172,11 @@ export default defineComponent({
       layerDom,
       title,
       author,
-      originUrl
-
+      originUrl,
+      publishTime,
     };
-  }
+  },
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -5,4 +5,6 @@ export interface NewsInfo {
   originUrl?: string;
   dataUrl?: string;
   author?: string;
+
+  publishTime?: string;
 }
